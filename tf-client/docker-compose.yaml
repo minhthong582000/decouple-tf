@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  rabbitmq:
+    image: "rabbitmq:3"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - "rabbitmq_data:/data"
+
+volumes:
+  rabbitmq_data:
