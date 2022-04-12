@@ -81,7 +81,7 @@ func main() {
 
 			log.Printf("Received instance name: %s", instanceName)
 			
-			// Best practice: get tfId from user input
+			// Best practice: get terraform stack id from user input
 			tfId := "tf-deployment"
 			app := cdktf.NewApp(nil)
 			// Create EC2 instances
