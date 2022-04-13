@@ -4,13 +4,16 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"time"
 
+	"github.com/aws/jsii-runtime-go"
 	"github.com/hashicorp/terraform-cdk-go/cdktf"
 	amqp "github.com/rabbitmq/amqp091-go"
 
 	"cdk.tf/go/stack/pkg/ec2"
+	"github.com/joho/godotenv"
 )
 
 func failOnError(err error, msg string) {
@@ -22,7 +25,7 @@ func failOnError(err error, msg string) {
 func tfApply(tfId string) error {
 	pathToStateFiles := "./cdktf.out/stacks/" + tfId
 	cmd := exec.Command(
-		"bash",
+		"sh",
 		"-c",
 		"terraform init; terraform apply -auto-approve", 
 	)
@@ -37,7 +40,10 @@ func tfApply(tfId string) error {
 }
 
 func main() {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	// Load env from .env
+	godotenv.Load()
+
+	conn, err := amqp.Dial("amqp://guest:guest@rabbitmq:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -81,12 +87,19 @@ func main() {
 
 			log.Printf("Received instance name: %s", instanceName)
 			
-			// Best practice: get terraform stack id from user input
+			// Best practice: get tfId from user input
 			tfId := "tf-deployment"
 			app := cdktf.NewApp(nil)
 			// Create EC2 instances
-			stack := ec2.NewEC2Stack(instanceName)
-			stack.CreateStack(app, tfId)
+			ec2Stack := ec2.NewEC2Stack(instanceName)
+			stack := ec2Stack.CreateStack(app, tfId)
+			cdktf.NewS3Backend(stack, &cdktf.S3BackendProps{
+				SecretKey: jsii.String(os.Getenv("AWS_SECRET_ACCESS_KEY")),
+				AccessKey: jsii.String(os.Getenv("AWS_ACCESS_KEY_ID")),
+				Bucket: jsii.String(os.Getenv("AWS_BUCKET_NAME")),
+				Region: jsii.String(os.Getenv("AWS_DEFAULT_REGION")),
+				Key: jsii.String(tfId),
+			})
 			app.Synth()
 			// Run terraform apply
 			err := tfApply(tfId)
