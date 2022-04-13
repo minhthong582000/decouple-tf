@@ -1,4 +1,3 @@
-
 # cdktf and terraform ignores
 .terraform
 cdktf.out
@@ -19,3 +18,5 @@ generated
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+.env

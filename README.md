@@ -17,29 +17,15 @@ In this example, we will see how consumers create AWS EC2 instances using config
 
 # Quick Start
 
-Start rabbitMQ:
+Start rabbitMQ, consumers:
 
 ```bash
 docker compose up
-```
-
-Download/generate modules and providers
-
-```bash
-cd tf-deployment
-cdktf get
-```
-
-Start terraform consumer:
-
-```bash
-cd tf-deployment
-go run main.go
 ```
 
 Start terraform producer:
 
 ```bash
 cd tf-client
-go run main.go <ec2-instance-name>
+go run main.go
 ```

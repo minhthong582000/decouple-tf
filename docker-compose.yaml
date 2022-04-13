@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  worker-1:
+    container_name: worker-1
+    build:
+      context: ./tf-deployment
+    restart: on-failure
+    env_file:
+      - ./tf-deployment/.env.dev
+
+  worker-2:
+    container_name: worker-2
+    build:
+      context: ./tf-deployment
+    restart: on-failure
+    env_file:
+      - ./tf-deployment/.env.dev
+
+  rabbitmq:
+    image: "rabbitmq:3"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - "rabbitmq_data:/data"
+
+volumes:
+  rabbitmq_data:
