@@ -27,5 +27,5 @@ Start terraform producer:
 
 ```bash
 cd tf-client
-go run main.go
+go run main.go <ec2-instance-name>
 ```
