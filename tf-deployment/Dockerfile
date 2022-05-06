@@ -15,9 +15,12 @@ RUN cd /tmp \
 
 WORKDIR /app
 
-COPY . .
-
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
 RUN cdktf get
+
+COPY . .
 RUN make engine
 
 # Distribution
